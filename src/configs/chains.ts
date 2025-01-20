@@ -8,11 +8,12 @@ export enum ChainId {
   Arbitrum = 42161,
   Sepolia = 11155111,
   ArbitrumSepolia = 421614,
+  NeoXDevNet = 2407101928,
 }
 
 export const supportedChainIds = {
   [Environment.Production]: [ChainId.Mainnet, ChainId.Arbitrum],
-  [Environment.Development]: [ChainId.Sepolia, ChainId.ArbitrumSepolia],
+  [Environment.Development]: [ChainId.Sepolia, ChainId.ArbitrumSepolia, ChainId.NeoXDevNet],
 }[environment];
 
 export const chains: Record<ChainId, Chain> = {
@@ -24,4 +25,25 @@ export const chains: Record<ChainId, Chain> = {
     (chain.rpcUrls.default.http[0] as string) = 'https://ethereum-sepolia-rpc.publicnode.com';
   }),
   [ChainId.ArbitrumSepolia]: arbitrumSepolia,
+  [ChainId.NeoXDevNet]: {
+    id: ChainId.NeoXDevNet,
+    name: 'Neo X DevNet',
+    nativeCurrency: {
+      name: 'GAS',
+      symbol: 'GAS',
+      decimals: 18,
+    },
+    rpcUrls: {
+      default: {
+        http: ['https://t2seed1.jiuquan.tech'],
+      },
+      antiMev: {
+        http: ['https://t2seed1.jiuquan.tech:8555'],
+      },
+    },
+    contracts: {
+      antiMev: { address: '0x1212000000000000000000000000000000000003' },
+    },
+    testnet: true,
+  },
 };

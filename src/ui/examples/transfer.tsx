@@ -4,8 +4,7 @@ import { skipToken } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { ComponentProps, FC, useEffect, useState } from 'react';
 import { isAddress } from 'viem';
-import { ChainId } from '@/configs/chains';
-import { wethAddresses } from '@/configs/tokens';
+import { ChainId, chains } from '@/configs/chains';
 import { useBalance, useDecimals, useSymbol, useTransfer } from '@/lib/hooks/tokens';
 import { accountAtom, chainIdAtom } from '@/lib/states/evm';
 import { formatNumber } from '@/lib/utils/formatters';
@@ -20,25 +19,32 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
 
   const [tokenChainId, setTokenChainId] = useState<ChainId | null>(null);
 
-  const [token, setToken] = useState('');
+  const [tokenText, setTokenText] = useState('');
 
   const changeToken = (text: string) => {
     setTokenChainId(chainId);
-    setToken(text);
+    setTokenText(text);
   };
 
+  const token =
+    tokenText === chains[chainId].nativeCurrency.symbol
+      ? null
+      : isAddress(tokenText)
+        ? tokenText
+        : skipToken;
+
   const { data: balance } = useBalance(
-    chainId === tokenChainId && account != null && isAddress(token)
+    chainId === tokenChainId && account != null && token !== skipToken
       ? { chainId, address: token, account }
       : skipToken,
   );
 
   const { data: symbol } = useSymbol(
-    chainId === tokenChainId && isAddress(token) ? { chainId, address: token } : skipToken,
+    chainId === tokenChainId && token !== skipToken ? { chainId, address: token } : skipToken,
   );
 
   const { data: decimals } = useDecimals(
-    chainId === tokenChainId && isAddress(token) ? { chainId, address: token } : skipToken,
+    chainId === tokenChainId && token !== skipToken ? { chainId, address: token } : skipToken,
   );
 
   const [to, setTo] = useState('');
@@ -51,7 +57,7 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
     if (
       chainId === tokenChainId &&
       account != null &&
-      isAddress(token) &&
+      token !== skipToken &&
       decimals != null &&
       isAddress(to) &&
       amount !== ''
@@ -60,9 +66,32 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
     }
   };
 
+  const { mutateAsync: mutationAntiMevTransfer, isPending: antiMevTransfering } = useTransfer();
+
+  const antiMevTransfer = async () => {
+    if (
+      chainId === tokenChainId &&
+      account != null &&
+      token !== skipToken &&
+      decimals != null &&
+      isAddress(to) &&
+      amount !== ''
+    ) {
+      await mutationAntiMevTransfer({
+        chainId,
+        address: token,
+        account,
+        decimals,
+        to,
+        amount,
+        useAntiMev: true,
+      });
+    }
+  };
+
   useEffect(() => {
     setTokenChainId(chainId);
-    setToken(wethAddresses[chainId]);
+    setTokenText('');
   }, [chainId]);
 
   return (
@@ -74,7 +103,11 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
       <div>{account}</div>
 
       <div>Token:</div>
-      <Input value={token} onChange={event => changeToken(event.target.value)} />
+      <Input
+        placeholder={`${chains[chainId].nativeCurrency.symbol} or 0x...`}
+        value={tokenText}
+        onChange={event => changeToken(event.target.value)}
+      />
 
       <div>Balance:</div>
       <div>
@@ -82,14 +115,22 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
       </div>
 
       <div>To:</div>
-      <Input value={to} onChange={event => setTo(event.target.value)} />
+      <Input placeholder="0x..." value={to} onChange={event => setTo(event.target.value)} />
 
       <div>Amount:</div>
-      <Input value={amount} onChange={event => setAmount(event.target.value)} />
+      <Input placeholder="0.00" value={amount} onChange={event => setAmount(event.target.value)} />
 
-      <Button className="col-span-2 place-self-start" loading={transfering} onClick={transfer}>
-        Send
-      </Button>
+      <div className="col-span-2 flex items-center place-self-start">
+        <Button loading={transfering} onClick={transfer}>
+          Send
+        </Button>
+
+        {chains[chainId].rpcUrls.antiMev != null && (
+          <Button className="ml-4" loading={antiMevTransfering} onClick={antiMevTransfer}>
+            Send (AntiMEV)
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
