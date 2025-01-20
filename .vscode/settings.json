@@ -1,0 +1,29 @@
+{
+  // Built-in settings
+  "editor.codeActionsOnSave": { "source.fixAll": "explicit" },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.quickSuggestions": { "strings": true },
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "explorer.sortOrderLexicographicOptions": "upper",
+  "javascript.preferences.quoteStyle": "double",
+  "typescript.preferences.quoteStyle": "double",
+
+  // Extensions settings
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "tailwindCSS.classAttributes": ["class", "className", ".*Class", ".*ClassName", "classNames"],
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "(?:cva|cx|cn)\\(([^)(]*(?:\\([^)(]*(?:\\([^)(]*(?:\\([^)(]*\\)[^)(]*)*\\)[^)(]*)*\\)[^)(]*)*)\\)",
+      "'([^']*)'"
+    ],
+    [
+      "(?:cva|cx|cn)\\(([^)(]*(?:\\([^)(]*(?:\\([^)(]*(?:\\([^)(]*\\)[^)(]*)*\\)[^)(]*)*\\)[^)(]*)*)\\)",
+      "\"([^\"]*)\""
+    ],
+    [
+      "(?:cva|cx|cn)\\(([^)(]*(?:\\([^)(]*(?:\\([^)(]*(?:\\([^)(]*\\)[^)(]*)*\\)[^)(]*)*\\)[^)(]*)*)\\)",
+      "`([^`]*)`"
+    ]
+  ]
+}
