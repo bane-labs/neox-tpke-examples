@@ -8,19 +8,24 @@ import {
 } from '@wagmi/core';
 import {
   Address,
+  concat,
   createPublicClient,
   getChainContractAddress,
   Hash,
   Hex,
   http,
   InternalRpcError,
+  toBytes,
   toHex,
   BaseError as ViemBaseError,
 } from 'viem';
 import { ChainId, chains } from '@/configs/chains';
 import { erc20Abi } from '../abis/erc20';
+import { governanceAbi } from '../abis/governance';
+import { keyManagementAbi } from '../abis/key-management';
 import { InternalError } from '../errors/common';
 import { amountToRawAmount, rawAmountToAmount } from '../utils/misc';
+import { getConsensusThreshold, getScaler, PublicKey } from '../utils/tpke';
 import { wagmiConfig } from '../utils/wagmi';
 import { switchChain } from './wagmi';
 
@@ -153,18 +158,68 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     transport: http(chains[params.chainId].rpcUrls.antiMev.http[0]),
   });
 
-  const data = await publicClient.request<{ ReturnType: Hex }>({
+  const transaction = await publicClient.request<{ ReturnType: Hex }>({
     method: 'eth_getEncryptedTransaction',
     params: [toHex(nonce), signature],
   });
+
+  // eslint-disable-next-line no-console
+  console.log('transaction', transaction);
+
+  const consensusSize = await readContract(wagmiConfig, {
+    chainId: params.chainId,
+    address: getChainContractAddress({ chain: chains[params.chainId], contract: 'governance' }),
+    abi: governanceAbi,
+    functionName: 'consensusSize',
+  });
+
+  // eslint-disable-next-line no-console
+  console.log('consensusSize', consensusSize);
+
+  const roundNumber = await readContract(wagmiConfig, {
+    chainId: params.chainId,
+    address: getChainContractAddress({ chain: chains[params.chainId], contract: 'keyManagement' }),
+    abi: keyManagementAbi,
+    functionName: 'roundNumber',
+  });
+
+  // eslint-disable-next-line no-console
+  console.log('roundNumber', roundNumber);
+
+  const aggregatedCommitment = await readContract(wagmiConfig, {
+    chainId: params.chainId,
+    address: getChainContractAddress({ chain: chains[params.chainId], contract: 'keyManagement' }),
+    abi: keyManagementAbi,
+    functionName: 'aggregatedCommitments',
+    args: [roundNumber],
+  });
+
+  // eslint-disable-next-line no-console
+  console.log('aggregatedCommitment', aggregatedCommitment);
+
+  const publicKey = PublicKey.fromAggregatedCommitment(
+    toBytes(aggregatedCommitment),
+    getScaler(consensusSize, getConsensusThreshold(consensusSize)),
+  );
+
+  const { encryptedKey, encryptedMsg } = publicKey.encrypt(toBytes(transaction));
+
+  const envelopeData = concat([
+    new Uint8Array([0xff, 0xff, 0xff, 0xff]),
+    encryptedKey,
+    encryptedMsg,
+  ]);
+
+  // eslint-disable-next-line no-console
+  console.log('envelopeData', toHex(envelopeData));
 
   await switchChain({ chainId: params.chainId, useAntiMev: params.useAntiMev });
 
   const hash = await sendTransaction(wagmiConfig, {
     chainId: params.chainId,
     account: params.account,
-    to: getChainContractAddress({ chain: chains[params.chainId], contract: 'antiMev' }),
-    data,
+    to: getChainContractAddress({ chain: chains[params.chainId], contract: 'governanceReward' }),
+    data: toHex(envelopeData),
   });
 
   return hash;

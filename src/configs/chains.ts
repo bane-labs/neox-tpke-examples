@@ -42,7 +42,9 @@ export const chains: Record<ChainId, Chain> = {
       },
     },
     contracts: {
-      antiMev: { address: '0x1212000000000000000000000000000000000003' },
+      governance: { address: '0x1212000000000000000000000000000000000001' },
+      governanceReward: { address: '0x1212000000000000000000000000000000000003' },
+      keyManagement: { address: '0x1212000000000000000000000000000000000008' },
     },
     testnet: true,
   },

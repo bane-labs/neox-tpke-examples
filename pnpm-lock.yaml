@@ -11,6 +11,9 @@ importers:
       '@cfx-kit/wallet-avatar':
         specifier: ^0.0.5
         version: 0.0.5
+      '@noble/curves':
+        specifier: ^1.8.1
+        version: 1.8.1
       '@radix-ui/react-dropdown-menu':
         specifier: ^2.1.4
         version: 2.1.4(@types/react-dom@19.0.3(@types/react@19.0.7))(@types/react@19.0.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -35,6 +38,9 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.7.9
+      bigint-crypto-utils:
+        specifier: ^3.3.0
+        version: 3.3.0
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -2654,6 +2660,10 @@ packages:
 
   big.js@5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
+
+  bigint-crypto-utils@3.3.0:
+    resolution: {integrity: sha512-jOTSb+drvEDxEq6OuUybOAv/xxoh3cuYRUIPyu8sSHQNKM303UQ2R1DAo45o1AkcIXw6fzbaFI1+xGGdaXs2lg==}
+    engines: {node: '>=14.0.0'}
 
   bignumber.js@9.1.2:
     resolution: {integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==}
@@ -9243,6 +9253,8 @@ snapshots:
       open: 8.4.2
 
   big.js@5.2.2: {}
+
+  bigint-crypto-utils@3.3.0: {}
 
   bignumber.js@9.1.2: {}
 
