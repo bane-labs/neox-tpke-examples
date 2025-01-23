@@ -61,7 +61,7 @@ describe('PublicKey', () => {
 
     // eslint-disable-next-line no-console
     console.log(
-      `encryptedKey: %s\necryptedMsg: %s\nenvelopeData: 0x%s\nencrypted tx hash:%s\n`,
+      `encryptedKey: %s\necryptedMsg: %s\nenvelopeData: %s\nencrypted tx hash:%s\n`,
       toHex(encryptedKey),
       toHex(encryptedMsg),
       toHex(envelopeData),

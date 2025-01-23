@@ -1,25 +1,21 @@
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
 import {
+  createConfig,
+  getConnectorClient,
   BaseError as WagmiBaseError,
-  ConnectorNotConnectedError as WagmiConnectorNotConnectedError,
+  switchChain as wagmiSwitchChain,
 } from '@wagmi/core';
-import { createConfig } from '@wagmi/core';
 import {
   Chain,
   createClient,
   http,
+  toHex,
   BaseError as ViemBaseError,
-  ChainMismatchError as ViemChainMismatchError,
   UserRejectedRequestError as ViemUserRejectedRequestError,
 } from 'viem';
 import { appName, walletConnectProjectId } from '@/configs/app';
-import { chains, supportedChainIds } from '@/configs/chains';
-import {
-  ChainMismatchError,
-  ConnectorNotConnectedError,
-  EvmError,
-  UserRejectedRequestError,
-} from '../errors/evm';
+import { ChainId, chains, supportedChainIds } from '@/configs/chains';
+import { UnknownEvmError, UserRejectedRequestError } from '../errors/evm';
 
 export const wagmiConfig = createConfig({
   chains: supportedChainIds.map(chainId => chains[chainId]) as [Chain, ...Chain[]],
@@ -34,19 +30,43 @@ export const wagmiConfig = createConfig({
 
 export function convertMaybeEvmError(error: Error): Error {
   if (error instanceof WagmiBaseError) {
-    if (error instanceof WagmiConnectorNotConnectedError) {
-      return new ConnectorNotConnectedError(undefined, { cause: error });
-    }
-    return new EvmError(error.shortMessage, { cause: error });
+    return new UnknownEvmError(error.shortMessage, { cause: error });
   }
   if (error instanceof ViemBaseError) {
     if (error.walk(error => error instanceof ViemUserRejectedRequestError) != null) {
       return new UserRejectedRequestError(undefined, { cause: error });
     }
-    if (error.walk(error => error instanceof ViemChainMismatchError) != null) {
-      return new ChainMismatchError(undefined, { cause: error });
-    }
-    return new EvmError(error.shortMessage, { cause: error });
+    return new UnknownEvmError(error.shortMessage, { cause: error });
   }
   return error;
+}
+
+export type SwitchChainParams = {
+  chainId: ChainId;
+  useAntiMev?: boolean;
+};
+
+export async function switchChain(params: SwitchChainParams) {
+  if (chains[params.chainId].rpcUrls.antiMev != null) {
+    const client = await getConnectorClient(wagmiConfig);
+    await client.request({
+      method: 'wallet_addEthereumChain',
+      params: [
+        {
+          chainId: toHex(params.chainId),
+          chainName: chains[params.chainId].name,
+          nativeCurrency: chains[params.chainId].nativeCurrency,
+          rpcUrls:
+            params.useAntiMev === true
+              ? chains[params.chainId].rpcUrls.antiMev.http
+              : chains[params.chainId].rpcUrls.default.http,
+          blockExplorerUrls:
+            chains[params.chainId].blockExplorers != null
+              ? [chains[params.chainId].blockExplorers!.default.url]
+              : [],
+        },
+      ],
+    });
+  }
+  await wagmiSwitchChain(wagmiConfig, { chainId: params.chainId });
 }

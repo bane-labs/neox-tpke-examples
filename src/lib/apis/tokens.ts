@@ -26,8 +26,7 @@ import { keyManagementAbi } from '../abis/key-management';
 import { InternalError } from '../errors/common';
 import { amountToRawAmount, rawAmountToAmount } from '../utils/misc';
 import { getConsensusThreshold, getScaler, PublicKey } from '../utils/tpke';
-import { wagmiConfig } from '../utils/wagmi';
-import { switchChain } from './wagmi';
+import { switchChain, wagmiConfig } from '../utils/wagmi';
 
 export type GetDecimalsParams = {
   chainId: ChainId;

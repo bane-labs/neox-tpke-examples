@@ -1,55 +1,53 @@
 import { BaseError, BaseErrorOptions } from './base';
 
-export class RequestError extends BaseError {
-  name = 'RequestError';
+export class TimeoutError extends BaseError {
+  name = 'TimeoutError';
 
-  constructor(message = 'Request error.', options: BaseErrorOptions = {}) {
+  constructor(message = 'Request timeout.', options: BaseErrorOptions = {}) {
     super(message, options);
   }
 }
-
-export class NetworkError extends RequestError {
-  name = 'NetworkError';
-
-  constructor(message = 'Network error.', options: BaseErrorOptions = {}) {
-    super(message, options);
-  }
-}
-
-export type HttpRequestErrorData = {
-  status: number;
-};
 
 export type HttpRequestErrorOptions = BaseErrorOptions & {
-  data: HttpRequestErrorData;
+  data?: {
+    status?: number;
+    json?: unknown;
+  };
 };
 
-export class HttpRequestError extends RequestError {
+export class HttpRequestError extends BaseError {
   name = 'HttpRequestError';
-  status: number;
+  status: number | null;
+  json: unknown;
 
-  constructor(message = 'Http request error.', options: HttpRequestErrorOptions) {
-    super(message, options);
-    this.status = options.data.status;
+  constructor(message: string | undefined, options: HttpRequestErrorOptions = {}) {
+    const status = options.data?.status;
+    super(
+      message ?? `HTTP request failed${status != null ? ` with status ${status}` : ''}.`,
+      options,
+    );
+    this.status = status ?? null;
+    this.json = options.data?.json;
   }
 }
 
-export type NextRequestErrorData = HttpRequestErrorData & {
-  responseErrorName: string;
-  responseErrorData: unknown;
+export type ApiRequestErrorOptions = BaseErrorOptions & {
+  data: {
+    status: number;
+    responseErrorName: string;
+    responseErrorData: unknown;
+  };
 };
 
-export type NextRequestErrorOptions = HttpRequestErrorOptions & {
-  data: NextRequestErrorData;
-};
-
-export class NextRequestError extends HttpRequestError {
-  name = 'NextRequestError';
+export class ApiRequestError extends BaseError {
+  name = 'ApiRequestError';
+  status: number;
   responseErrorName: string;
   responseErrorData: unknown;
 
-  constructor(message = 'Next request error.', options: NextRequestErrorOptions) {
+  constructor(message = 'API request failed.', options: ApiRequestErrorOptions) {
     super(message, options);
+    this.status = options.data.status;
     this.responseErrorName = options.data.responseErrorName;
     this.responseErrorData = options.data.responseErrorData;
   }

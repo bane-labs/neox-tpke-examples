@@ -1,8 +1,8 @@
-import { nextRequest } from '../utils/axios';
+import { apiRequest } from '../utils/ky';
 
 export async function getServerTime(): Promise<number> {
-  const result = await nextRequest<number>({
-    url: '/api/time',
+  const result = await apiRequest<number>({
+    url: 'time',
   });
   return result;
 }
