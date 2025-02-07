@@ -15,6 +15,7 @@ import {
   Hex,
   http,
   InternalRpcError,
+  pad,
   toBytes,
   toHex,
   BaseError as ViemBaseError,
@@ -205,6 +206,7 @@ export async function transfer(params: TransferParams): Promise<Hash> {
 
   const envelopeData = concat([
     new Uint8Array([0xff, 0xff, 0xff, 0xff]),
+    pad(toBytes(roundNumber), { size: 4 }).reverse(),
     encryptedKey,
     encryptedMsg,
   ]);
