@@ -15,6 +15,7 @@ import {
   Hex,
   http,
   InternalRpcError,
+  keccak256,
   pad,
   toBytes,
   toHex,
@@ -207,6 +208,7 @@ export async function transfer(params: TransferParams): Promise<Hash> {
   const envelopeData = concat([
     new Uint8Array([0xff, 0xff, 0xff, 0xff]),
     pad(toBytes(roundNumber), { size: 4 }).reverse(),
+    toBytes(keccak256(transaction)),
     encryptedKey,
     encryptedMsg,
   ]);
