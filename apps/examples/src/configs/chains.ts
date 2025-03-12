@@ -8,12 +8,12 @@ export enum ChainId {
   Arbitrum = 42161,
   Sepolia = 11155111,
   ArbitrumSepolia = 421614,
-  NeoXDevNet = 2407101928,
+  NeoXT4 = 12227332,
 }
 
 export const supportedChainIds = {
   [Environment.Production]: [ChainId.Mainnet, ChainId.Arbitrum],
-  [Environment.Development]: [ChainId.Sepolia, ChainId.ArbitrumSepolia, ChainId.NeoXDevNet],
+  [Environment.Development]: [ChainId.Sepolia, ChainId.ArbitrumSepolia, ChainId.NeoXT4],
 }[environment];
 
 export const chains: Record<ChainId, Chain> = {
@@ -25,9 +25,9 @@ export const chains: Record<ChainId, Chain> = {
     (chain.rpcUrls.default.http[0] as string) = 'https://ethereum-sepolia-rpc.publicnode.com';
   }),
   [ChainId.ArbitrumSepolia]: arbitrumSepolia,
-  [ChainId.NeoXDevNet]: {
-    id: ChainId.NeoXDevNet,
-    name: 'Neo X DevNet',
+  [ChainId.NeoXT4]: {
+    id: ChainId.NeoXT4,
+    name: 'Neo X T4',
     nativeCurrency: {
       name: 'GAS',
       symbol: 'GAS',
@@ -35,10 +35,16 @@ export const chains: Record<ChainId, Chain> = {
     },
     rpcUrls: {
       default: {
-        http: ['https://t2seed1.jiuquan.tech'],
+        http: ['https://neoxt4seed1.ngd.network'],
       },
       antiMev: {
-        http: ['https://t2seed1.jiuquan.tech:8555'],
+        http: ['https://neoxt4seed1.ngd.network:8555'],
+      },
+    },
+    blockExplorers: {
+      default: {
+        name: 'Neo X Chain Explorer',
+        url: 'https://neoxt4scan.ngd.network',
       },
     },
     contracts: {
