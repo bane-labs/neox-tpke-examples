@@ -7,7 +7,8 @@
     "test": "turbo run test",
     "check-types": "turbo run check-types",
     "lint": "turbo run lint",
-    "format": "turbo run format"
+    "format": "turbo run format",
+    "publish-packages": "turbo run build lint test && changeset version && changeset publish"
   },
   "devDependencies": {
     "turbo": "^2.4.4"
@@ -15,5 +16,8 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.5.2",
+  "dependencies": {
+    "@changesets/cli": "^2.28.1"
+  }
 }

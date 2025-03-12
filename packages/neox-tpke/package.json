@@ -1,12 +1,12 @@
 {
   "name": "neox-tpke",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NeoX TPKE utilities",
   "keywords": [
     "neox",
     "tpke"
   ],
-  "repository": "https://github.com/openswap/openswap-frontend.git",
+  "repository": "https://github.com/liuqiang1357/neox-tpke-monorepo.git",
   "main": "dist/neox-tpke.umd.js",
   "module": "dist/neox-tpke.mjs",
   "typings": "dist/index.d.ts",
