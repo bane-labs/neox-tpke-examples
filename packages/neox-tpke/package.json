@@ -1,0 +1,33 @@
+{
+  "name": "neox-tpke",
+  "version": "1.0.0",
+  "description": "NeoX TPKE utilities",
+  "keywords": [
+    "neox",
+    "tpke"
+  ],
+  "repository": "https://github.com/openswap/openswap-frontend.git",
+  "main": "dist/neox-tpke.umd.js",
+  "module": "dist/neox-tpke.mjs",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest run",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@noble/curves": "^1.8.1",
+    "bigint-crypto-utils": "^3.3.0",
+    "viem": "^2.22.10"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "vite": "^6.2.1",
+    "vite-plugin-dts": "^4.5.3",
+    "vitest": "^3.0.2"
+  }
+}
