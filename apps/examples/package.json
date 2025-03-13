@@ -3,13 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "pnpx @cloudflare/next-on-pages",
-    "start": "wrangler pages dev",
-    "test": "vitest run",
+    "build": "pnpm exec next-on-pages",
     "check-types": "tsc",
+    "dev": "next dev",
+    "format": "prettier --write .",
     "lint": "eslint --max-warnings 0 .",
-    "format": "prettier --write ."
+    "start": "wrangler pages dev",
+    "test": "vitest run"
   },
   "dependencies": {
     "@cfx-kit/wallet-avatar": "^0.0.5",

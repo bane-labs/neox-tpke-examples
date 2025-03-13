@@ -14,10 +14,10 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite build --watch",
     "build": "vite build",
-    "test": "vitest run",
-    "format": "prettier --write ."
+    "dev": "vite build --watch",
+    "format": "prettier --write .",
+    "test": "vitest run"
   },
   "dependencies": {
     "@noble/curves": "^1.8.1",
