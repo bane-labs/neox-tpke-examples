@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "start": "turbo run start",
     "test": "turbo run test",
     "check-types": "turbo run check-types",
     "lint": "turbo run lint",
@@ -11,13 +12,11 @@
     "publish-packages": "turbo run build lint test && changeset version && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.28.1",
     "turbo": "^2.4.4"
   },
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@10.5.2",
-  "dependencies": {
-    "@changesets/cli": "^2.28.1"
-  }
+  "packageManager": "pnpm@10.5.2"
 }
