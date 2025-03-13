@@ -31,7 +31,7 @@ The repository is organized as a monorepo using pnpm workspaces and Turborepo fo
 
 ```bash
 # Clone the repository
-git clone https://github.com/liuqiang1357/neox-tpke-monorepo.git
+git clone https://github.com/bane-labs/neox-tpke-monorepo.git
 cd neox-tpke-monorepo
 
 # Install dependencies
