@@ -1,12 +1,12 @@
 {
   "name": "neox-tpke",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "NeoX TPKE utilities",
   "keywords": [
     "neox",
     "tpke"
   ],
-  "repository": "https://github.com/liuqiang1357/neox-tpke-monorepo.git",
+  "repository": "https://github.com/bane-labs/neox-tpke-monorepo.git",
   "main": "dist/neox-tpke.umd.js",
   "module": "dist/neox-tpke.mjs",
   "typings": "dist/index.d.ts",
