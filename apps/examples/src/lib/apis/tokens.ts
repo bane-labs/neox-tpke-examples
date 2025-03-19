@@ -18,6 +18,7 @@ import {
   InternalRpcError,
   keccak256,
   pad,
+  parseTransaction,
   toBytes,
   toHex,
   BaseError as ViemBaseError,
@@ -205,9 +206,12 @@ export async function transfer(params: TransferParams): Promise<Hash> {
 
   const { encryptedKey, encryptedMsg } = publicKey.encrypt(toBytes(transaction));
 
+  const transactionObject = parseTransaction(transaction);
+
   const envelopeData = concat([
     new Uint8Array([0xff, 0xff, 0xff, 0xff]),
     pad(toBytes(roundNumber), { size: 4 }).reverse(),
+    pad(toBytes(transactionObject.gas!), { size: 4 }).reverse(),
     toBytes(keccak256(transaction)),
     encryptedKey,
     encryptedMsg,

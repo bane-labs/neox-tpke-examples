@@ -1,4 +1,6 @@
 name: Deploy Examples
+env:
+  NEXT_PUBLIC_ENVIRONMENT: development
 
 on:
   workflow_dispatch:
