@@ -213,8 +213,8 @@ export async function transfer(params: TransferParams): Promise<Hash> {
 
   const envelopeData = concat([
     new Uint8Array([0xff, 0xff, 0xff, 0xff]),
-    pad(toBytes(roundNumber), { size: 4 }).reverse(),
-    pad(toBytes(transactionObject.gas!), { size: 4 }).reverse(),
+    pad(toBytes(roundNumber), { size: 4 }),
+    pad(toBytes(transactionObject.gas!), { size: 4 }),
     toBytes(keccak256(transaction)),
     encryptedKey,
     encryptedMsg,
