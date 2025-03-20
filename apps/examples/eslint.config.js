@@ -101,5 +101,5 @@ export default [
 
   prettier,
 
-  { ignores: ['.next'] },
+  { ignores: ['.turbo', '.next', '.vercel', '.wrangler'] },
 ];
