@@ -208,6 +208,9 @@ export async function transfer(params: TransferParams): Promise<Hash> {
 
   const transactionObject = parseTransaction(transaction);
 
+  // eslint-disable-next-line no-console
+  console.log('transaction gas', transactionObject.gas);
+
   const envelopeData = concat([
     new Uint8Array([0xff, 0xff, 0xff, 0xff]),
     pad(toBytes(roundNumber), { size: 4 }).reverse(),
