@@ -38,7 +38,7 @@ export const chains: Record<ChainId, Chain> = {
         http: ['https://neoxt4seed1.ngd.network'],
       },
       antiMev: {
-        http: ['https://neoxt4seed1.ngd.network:8555'],
+        http: ['https://neoxt4seed5.ngd.network'],
       },
     },
     blockExplorers: {
