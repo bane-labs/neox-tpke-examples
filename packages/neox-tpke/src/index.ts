@@ -1,4 +1,5 @@
-import crypto from 'crypto';
+import hash from 'hash.js';
+import aes from 'aes-js';
 import { Fp, Fp2 } from '@noble/curves/abstract/tower';
 import { ProjPointType } from '@noble/curves/abstract/weierstrass';
 import { bls12_381 as bls } from '@noble/curves/bls12-381';
@@ -157,12 +158,9 @@ function aesEncrypt(msg: ByteArray, seed: ByteArray): ByteArray {
   if (msg.length < 1) {
     throw new Error('Empty aes message');
   }
-
-  const hash = crypto.createHash('sha256').update(seed).digest();
-  const cipher = crypto.createCipheriv('aes-256-cbc', hash, hash.subarray(0, 16));
-
-  let encrypted: ByteArray = cipher.update(msg);
-  encrypted = concat([encrypted, cipher.final()]);
+  const seedHash = hash.sha256().update(seed).digest();
+  const cipher = new aes.ModeOfOperation.cbc(seedHash, seedHash.slice(0, 16));
+  const encrypted = cipher.encrypt(aes.padding.pkcs7.pad(msg));
 
   return encrypted;
 }

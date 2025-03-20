@@ -105,7 +105,9 @@ const scaler = getScaler(consensusSize, threshold);
 ## Dependencies
 
 - [@noble/curves](https://github.com/paulmillr/noble-curves) - For elliptic curve operations
+- [aes-js](https://github.com/ricmoo/aes-js) - Advanced Encryption Standard (AES) implementation
 - [bigint-crypto-utils](https://github.com/juanelas/bigint-crypto-utils) - For bigint cryptographic utilities
+- [hash.js](https://github.com/indutny/hash.js) - Hash functions implemented in JavaScript
 - [viem](https://github.com/wagmi-dev/viem) - For Ethereum-related utilities
 
 ## License
