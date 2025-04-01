@@ -1,4 +1,4 @@
-import { concat, keccak256, pad, toBytes, toHex } from 'viem';
+import { concat, keccak256, pad, parseTransaction, toBytes, toHex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { getConsensusThreshold, getScaler, PublicKey } from '.';
 
@@ -55,9 +55,13 @@ describe('PublicKey', () => {
 
     const { encryptedKey, encryptedMsg } = publicKey.encrypt(toBytes(transaction));
 
+    const transactionObject = parseTransaction(transaction);
+
     const envelopeData = concat([
       new Uint8Array([0xff, 0xff, 0xff, 0xff]),
       pad(toBytes(roundNumber), { size: 4 }).reverse(),
+      pad(toBytes(transactionObject.gas!), { size: 4 }),
+      toBytes(keccak256(transaction)),
       encryptedKey,
       encryptedMsg,
     ]);
