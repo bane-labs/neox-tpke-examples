@@ -161,7 +161,7 @@ export async function transfer(params: TransferParams): Promise<Hash> {
   });
 
   const transaction = await publicClient.request<{ ReturnType: Hex }>({
-    method: 'eth_getEncryptedTransaction',
+    method: 'eth_getCachedTransaction',
     params: [toHex(nonce), signature],
   });
 
