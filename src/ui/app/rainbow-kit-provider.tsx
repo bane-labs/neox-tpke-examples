@@ -11,14 +11,40 @@ import { AccountIcon } from './account-icon';
 
 export const RainbowKitProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { resolvedTheme } = useTheme();
-
+  const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState(rainbowkitLightTheme);
-
   const chainId = useAtomValue(chainIdAtom);
 
+  // Prevent hydration mismatch by only setting theme after mount
   useEffect(() => {
-    setTheme(resolvedTheme === 'light' ? rainbowkitLightTheme : rainbowkitDarkTheme);
-  }, [resolvedTheme]);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      setTheme(resolvedTheme === 'dark' ? rainbowkitDarkTheme : rainbowkitLightTheme);
+    }
+  }, [resolvedTheme, mounted]);
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <Provider
+        theme={rainbowkitLightTheme}
+        avatar={({ address, size }) => (
+          <AccountIcon
+            className="size-[var(--size)]"
+            style={{ '--size': `${size}px` }}
+            account={getAddress(address)}
+          />
+        )}
+        locale="en"
+        initialChain={chainId}
+      >
+        {children}
+      </Provider>
+    );
+  }
 
   return (
     <Provider

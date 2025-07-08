@@ -1,47 +1,52 @@
 'use client';
 
 import { useAtom } from 'jotai';
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { BaseError } from '@/lib/errors/base';
 import { lastErrorAtom } from '@/lib/states/errors';
 
 export const ErrorHandler: FC = () => {
   const [lastError, setLastError] = useAtom(lastErrorAtom);
-
+  const [mounted, setMounted] = useState(false);
   const recentMessages = useRef<Partial<Record<string, boolean>>>({});
 
   useEffect(() => {
-    if (lastError != null) {
-      setLastError(null);
+    setMounted(true);
+  }, []);
 
-      if (lastError instanceof BaseError) {
-        setTimeout(() => {
-          if (!lastError.handled) {
-            lastError.handled = true;
+  useEffect(() => {
+    // Only handle errors on client-side to prevent hydration mismatches
+    if (!mounted || lastError == null) return;
 
-            if (recentMessages.current[lastError.message] !== true) {
-              recentMessages.current[lastError.message] = true;
+    setLastError(null);
 
-              toast.error(lastError.message);
+    if (lastError instanceof BaseError) {
+      setTimeout(() => {
+        if (!lastError.handled) {
+          lastError.handled = true;
 
-              setTimeout(() => {
-                delete recentMessages.current[lastError.message];
-              }, 1000);
-            }
+          if (recentMessages.current[lastError.message] !== true) {
+            recentMessages.current[lastError.message] = true;
+
+            toast.error(lastError.message);
+
+            setTimeout(() => {
+              delete recentMessages.current[lastError.message];
+            }, 1000);
           }
-        });
-        if (lastError.needFix) {
-          console.error(lastError);
-        } else {
-          // eslint-disable-next-line no-console
-          console.log(lastError);
         }
-      } else {
+      });
+      if (lastError.needFix) {
         console.error(lastError);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(lastError);
       }
+    } else {
+      console.error(lastError);
     }
-  }, [lastError, setLastError]);
+  }, [lastError, setLastError, mounted]);
 
   return null;
 };
