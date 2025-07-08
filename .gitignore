@@ -1,5 +1,5 @@
 # editor
-.vscode/*
+.vscode/**
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea
@@ -13,6 +13,7 @@ next-env.d.ts
 tsconfig.tsbuildinfo
 .vercel
 .wrangler
+.turbo
 
 # logs
 *.log
