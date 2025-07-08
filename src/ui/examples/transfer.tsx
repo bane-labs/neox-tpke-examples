@@ -54,6 +54,8 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
   const { mutateAsync: mutationTransfer, isPending: transfering } = useTransfer();
 
   const transfer = async () => {
+    // eslint-disable-next-line no-console
+    console.log('🖱️  Regular transfer button clicked');
     if (
       chainId === tokenChainId &&
       account != null &&
@@ -62,13 +64,27 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
       isAddress(to) &&
       amount !== ''
     ) {
+      // eslint-disable-next-line no-console
+      console.log('✅ All conditions met, starting regular transfer...');
       await mutationTransfer({ chainId, address: token, account, decimals, to, amount });
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('❌ Transfer conditions not met:', {
+        chainIdMatch: chainId === tokenChainId,
+        hasAccount: account != null,
+        validToken: token !== skipToken,
+        hasDecimals: decimals != null,
+        validTo: isAddress(to),
+        hasAmount: amount !== '',
+      });
     }
   };
 
   const { mutateAsync: mutationAntiMevTransfer, isPending: antiMevTransfering } = useTransfer();
 
   const antiMevTransfer = async () => {
+    // eslint-disable-next-line no-console
+    console.log('🛡️  AntiMEV transfer button clicked');
     if (
       chainId === tokenChainId &&
       account != null &&
@@ -77,6 +93,8 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
       isAddress(to) &&
       amount !== ''
     ) {
+      // eslint-disable-next-line no-console
+      console.log('✅ All conditions met, starting AntiMEV transfer...');
       await mutationAntiMevTransfer({
         chainId,
         address: token,
@@ -85,6 +103,16 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
         to,
         amount,
         useAntiMev: true,
+      });
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('❌ AntiMEV transfer conditions not met:', {
+        chainIdMatch: chainId === tokenChainId,
+        hasAccount: account != null,
+        validToken: token !== skipToken,
+        hasDecimals: decimals != null,
+        validTo: isAddress(to),
+        hasAmount: amount !== '',
       });
     }
   };
@@ -126,9 +154,14 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
         </Button>
 
         {chains[chainId].rpcUrls.antiMev != null && (
-          <Button className="ml-4" loading={antiMevTransfering} onClick={antiMevTransfer}>
-            Send (AntiMEV)
-          </Button>
+          <>
+            <Button className="ml-4" loading={antiMevTransfering} onClick={antiMevTransfer}>
+              Send (AntiMEV)
+            </Button>
+            <div className="ml-2 text-sm text-muted-foreground">
+              AntiMEV protects against MEV attacks. If it fails, try the regular Send button.
+            </div>
+          </>
         )}
       </div>
     </div>
