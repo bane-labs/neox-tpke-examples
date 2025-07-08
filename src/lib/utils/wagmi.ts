@@ -73,7 +73,7 @@ export async function switchChain(params: SwitchChainParams) {
 
         const chainConfig = {
           chainId: toHex(params.chainId),
-          chainName: `${chains[params.chainId].name} (AntiMEV)`,
+          chainName: `${chains[params.chainId].name}`,
           nativeCurrency: chains[params.chainId].nativeCurrency,
           rpcUrls: chains[params.chainId].rpcUrls.antiMev.http,
           blockExplorerUrls:
