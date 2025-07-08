@@ -37,11 +37,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Dependencies
 
-This project uses the published `neox-tpke` library version ^1.0.4 from npm, which provides utilities for threshold public key encryption operations on the NeoX blockchain.
+This project uses the published `neox-tpke` library, which provides utilities for threshold public key encryption operations on the NeoX blockchain.
 
 ## Learn More
 
-- [NeoX Documentation](https://docs.neox.org/) - learn about NeoX blockchain
+- [NeoX Documentation](https://xdocs.ngd.network/) - learn about NeoX blockchain
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API
 - [Tailwind CSS](https://tailwindcss.com/docs) - utility-first CSS framework
 
