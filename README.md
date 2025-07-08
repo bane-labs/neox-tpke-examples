@@ -1,74 +1,52 @@
-# NeoX TPKE Monorepo
+# NeoX TPKE Examples
 
-This monorepo contains the implementation of Threshold Public Key Encryption (TPKE) utilities for NeoX blockchain, along with example applications demonstrating its usage.
+This is a [Next.js](https://nextjs.org/) application that demonstrates the usage of the [neox-tpke](https://www.npmjs.com/package/neox-tpke) library for threshold public key encryption on the NeoX blockchain.
 
-## Overview
+## Features
 
-NeoX TPKE provides cryptographic utilities for threshold encryption, allowing data to be encrypted in a way that requires a threshold number of participants to decrypt it. This is particularly useful for blockchain applications that require privacy and security features.
-
-The repository is organized as a monorepo using pnpm workspaces and Turborepo for efficient management of multiple packages and applications.
-
-## Repository Structure
-
-- `packages/neox-tpke`: Core TPKE implementation library
-- `apps/examples`: Example Next.js application demonstrating the usage of the TPKE library
-
-## Key Features
-
-- BLS-based threshold encryption
-- Public key generation from aggregated commitments
-- Secure message encryption with AES
-- Anti-MEV transaction protection examples
+- Examples of TPKE (Threshold Public Key Encryption) operations
+- Integration with NeoX blockchain
+- Modern React/Next.js interface with Tailwind CSS
+- Web3 wallet integration using RainbowKit and Wagmi
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js >= 22
-- pnpm >= 10.5.2
-
-### Installation
+First, install the dependencies:
 
 ```bash
-# Clone the repository
-git clone https://github.com/bane-labs/neox-tpke-monorepo.git
-cd neox-tpke-monorepo
-
-# Install dependencies
 pnpm install
 ```
 
-### Development
+Then, run the development server:
 
 ```bash
-# Build all packages
-pnpm build
-
-# Run development servers
 pnpm dev
-
-# Run tests
-pnpm test
 ```
 
-## Packages
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### neox-tpke
+## Available Scripts
 
-The core library implementing TPKE functionality. It provides:
+- `pnpm dev` - Start the development server
+- `pnpm build` - Build the application for production
+- `pnpm start` - Start the production server (requires build first)
+- `pnpm lint` - Run ESLint
+- `pnpm format` - Format code with Prettier
+- `pnpm test` - Run tests
+- `pnpm check-types` - Type check with TypeScript
 
-- Cryptographic primitives for threshold encryption
-- Public key management
-- Message encryption and decryption
+## Dependencies
 
-### examples
+This project uses the published `neox-tpke` library version ^1.0.4 from npm, which provides utilities for threshold public key encryption operations on the NeoX blockchain.
 
-A Next.js application demonstrating the usage of the TPKE library, including:
+## Learn More
 
-- Token transfer with anti-MEV protection
-- Integration with blockchain wallets
-- UI components for encryption operations
+- [NeoX Documentation](https://docs.neox.org/) - learn about NeoX blockchain
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API
+- [Tailwind CSS](https://tailwindcss.com/docs) - utility-first CSS framework
 
-## License
+## Deploy on Vercel
 
-[MIT](LICENSE)
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
