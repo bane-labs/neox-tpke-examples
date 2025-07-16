@@ -178,7 +178,7 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
           </Button>
 
           {chains[chainId].rpcUrls.antiMev != null && (
-            <Button className="" loading={antiMevTransfering} onClick={antiMevTransfer}>
+            <Button loading={antiMevTransfering} onClick={antiMevTransfer}>
               Send (AntiMEV)
             </Button>
           )}
