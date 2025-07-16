@@ -185,7 +185,6 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
 
           <Button
             variant="outline"
-            className=""
             onClick={clearSteps}
             disabled={transfering || antiMevTransfering}
           >
