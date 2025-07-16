@@ -146,9 +146,9 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
 
   return (
     <div className={cn('w-full max-w-4xl', className)} {...props}>
-      <div className="grid w-[40rem] grid-cols-[auto_1fr] items-center gap-4">
+      <div className="grid w-full max-w-[40rem] grid-cols-[auto_1fr] items-center gap-4 md:gap-6">
         <div>Account:</div>
-        <div>{account}</div>
+        <div className="break-all">{account}</div>
 
         <div>Token:</div>
         <Input
@@ -172,20 +172,20 @@ export const Transfer: FC<ComponentProps<'div'>> = ({ className, ...props }) => 
           onChange={event => setAmount(event.target.value)}
         />
 
-        <div className="col-span-2 flex items-center place-self-start">
+        <div className="col-span-2 flex flex-wrap items-center gap-2 place-self-start md:gap-4">
           <Button loading={transfering} onClick={transfer}>
             Send
           </Button>
 
           {chains[chainId].rpcUrls.antiMev != null && (
-            <Button className="ml-4" loading={antiMevTransfering} onClick={antiMevTransfer}>
+            <Button className="" loading={antiMevTransfering} onClick={antiMevTransfer}>
               Send (AntiMEV)
             </Button>
           )}
 
           <Button
             variant="outline"
-            className="ml-4"
+            className=""
             onClick={clearSteps}
             disabled={transfering || antiMevTransfering}
           >

@@ -10,9 +10,9 @@ import { SwitchTheme } from './switch-theme';
 export const Header: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   return (
     <div className={cn('container flex h-20 items-center justify-between', className)} {...props}>
-      <div className="text-2xl">{appName}</div>
+      <div className="truncate text-xl font-medium md:text-2xl">{appName}</div>
 
-      <div className="flex space-x-4">
+      <div className="flex flex-shrink-0 space-x-2 md:space-x-4">
         <SwitchChain />
         <Connect />
         <SwitchTheme />
