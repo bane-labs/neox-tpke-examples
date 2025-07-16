@@ -27,10 +27,11 @@ export const MetaMaskBanner: FC<ComponentProps<'div'>> = ({ className, ...props 
             />
           </svg>
           <span>
-            <strong>Note:</strong> These examples require MetaMask version 12.20.1 or higher to function properly.
+            <strong>Note:</strong> These examples require MetaMask version 12.20.1 or higher to
+            function properly.
           </span>
         </div>
       </div>
     </div>
   );
-}; 
+};
