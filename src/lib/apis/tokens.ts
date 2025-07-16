@@ -353,7 +353,12 @@ export async function transfer(params: TransferParams): Promise<Hash> {
 
   updateStep(encryptStepId, {
     status: 'success',
-    data: { encryptedKeyLength: encryptedKey.length, encryptedMsgLength: encryptedMsg.length },
+    data: {
+      encryptedKeyLength: encryptedKey.length,
+      encryptedMsgLength: encryptedMsg.length,
+      encryptedKey: toHex(encryptedKey),
+      encryptedMsg: toHex(encryptedMsg),
+    },
   });
 
   // Step 12: Parse transaction object
