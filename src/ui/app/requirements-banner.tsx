@@ -3,7 +3,7 @@
 import { ComponentProps, FC } from 'react';
 import { cn } from '@/lib/utils/shadcn';
 
-export const MetaMaskBanner: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
+export const RequirementsBanner: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   return (
     <div
       className={cn(
@@ -27,8 +27,8 @@ export const MetaMaskBanner: FC<ComponentProps<'div'>> = ({ className, ...props 
             />
           </svg>
           <span>
-            <strong>Note:</strong> These examples require MetaMask version 12.20.1 or higher to
-            function properly.
+            <strong>Note:</strong> If you&apos;re using MetaMask, please ensure you have version
+            12.20.1 or higher for these examples to work properly.
           </span>
         </div>
       </div>

@@ -4,8 +4,8 @@ import '@/styles/index.css';
 import { appName } from '@/configs/app';
 import { fontsClassName } from '@/lib/utils/fonts';
 import { Header } from '@/ui/app/header';
-import { MetaMaskBanner } from '@/ui/app/metamask-banner';
 import { Providers } from '@/ui/app/providers';
+import { RequirementsBanner } from '@/ui/app/requirements-banner';
 
 export const metadata: Metadata = {
   title: appName,
@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <body className={fontsClassName}>
         <Providers>
           <div className="flex min-h-screen min-w-[1400px] flex-col">
-            <MetaMaskBanner />
+            <RequirementsBanner />
             <Header />
             {children}
           </div>
