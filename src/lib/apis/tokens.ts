@@ -92,6 +92,18 @@ export async function getBalance(params: GetBalanceParams): Promise<string> {
   return rawAmountToAmount(balance, params.decimals);
 }
 
+export type StepCallback = (step: {
+  emoji: string;
+  title: string;
+  description?: string;
+  data?: Record<string, unknown>;
+}) => string;
+
+export type UpdateStepCallback = (
+  id: string,
+  updates: { status: 'success' | 'error'; data?: Record<string, unknown> },
+) => void;
+
 export type TransferParams = {
   chainId: ChainId;
   address: Address | null;
@@ -100,19 +112,64 @@ export type TransferParams = {
   to: Address;
   amount: string;
   useAntiMev?: boolean;
+  onStep?: StepCallback;
+  onUpdateStep?: UpdateStepCallback;
 };
 
 export async function transfer(params: TransferParams): Promise<Hash> {
+  const { onStep, onUpdateStep } = params;
+
+  const addStep = (step: Parameters<StepCallback>[0]) => {
+    return onStep?.(step) ?? '';
+  };
+
+  const updateStep = (id: string, updates: Parameters<UpdateStepCallback>[1]) => {
+    onUpdateStep?.(id, updates);
+  };
+
+  // Step 1: Switch chain
+  const switchStepId = addStep({
+    emoji: '🔄',
+    title: 'Switching to target chain',
+    description: `Switching to ${chains[params.chainId].name}`,
+    data: { chainId: params.chainId, useAntiMev: params.useAntiMev },
+  });
+
   await switchChain({ chainId: params.chainId, useAntiMev: params.useAntiMev });
+  updateStep(switchStepId, { status: 'success' });
 
   let nonce: number | undefined;
 
   if (params.useAntiMev === true) {
+    // Step 2: Get nonce for AntiMEV
+    const nonceStepId = addStep({
+      emoji: '🔢',
+      title: 'Getting transaction nonce',
+      description: 'Required for AntiMEV transactions',
+      data: { account: params.account },
+    });
+
     nonce = await getTransactionCount(wagmiConfig, {
       chainId: params.chainId,
       address: params.account,
     });
+
+    updateStep(nonceStepId, { status: 'success', data: { nonce } });
   }
+
+  // Step 3: Attempt initial transaction
+  const txStepId = addStep({
+    emoji: params.address != null ? '💰' : '💎',
+    title:
+      params.address != null ? 'Sending ERC20 token transfer' : 'Sending native token transfer',
+    description: `Transferring ${params.amount} to ${params.to}`,
+    data: {
+      tokenAddress: params.address,
+      amount: params.amount,
+      to: params.to,
+      nonce,
+    },
+  });
 
   try {
     let hash: Hash;
@@ -134,30 +191,81 @@ export async function transfer(params: TransferParams): Promise<Hash> {
         nonce,
       });
     }
+
     if (params.useAntiMev !== true) {
+      updateStep(txStepId, { status: 'success', data: { transactionHash: hash } });
+
+      const completionStepId = addStep({
+        emoji: '✅',
+        title: 'Transaction completed',
+        description: 'Standard transaction sent successfully',
+        data: { hash },
+      });
+
+      updateStep(completionStepId, { status: 'success' });
+
       return hash;
     }
+
+    updateStep(txStepId, { status: 'success', data: { transactionHash: hash } });
   } catch (error) {
     if (
       params.useAntiMev !== true ||
       !(error instanceof ViemBaseError) ||
       error.walk(error => error instanceof InternalRpcError) == null
     ) {
+      updateStep(txStepId, {
+        status: 'error',
+        data: { error: error instanceof Error ? error.message : String(error) },
+      });
       throw error;
     }
+
+    updateStep(txStepId, {
+      status: 'success',
+      data: { note: 'Transaction cached for AntiMEV processing' },
+    });
   }
 
   if (nonce == null) {
     throw new InternalError('Nonce is not available.');
   }
 
+  // Step 4: Sign nonce message
+  const signStepId = addStep({
+    emoji: '✍️',
+    title: 'Signing nonce message',
+    description: 'Creating signature for transaction verification',
+    data: { nonce },
+  });
+
   const signature = await signMessage(wagmiConfig, {
     message: nonce.toString(),
   });
 
+  updateStep(signStepId, { status: 'success', data: { signature } });
+
+  // Step 5: Create AntiMEV client
+  const clientStepId = addStep({
+    emoji: '🌐',
+    title: 'Creating AntiMEV client',
+    description: 'Connecting to AntiMEV RPC endpoint',
+    data: { rpcUrl: chains[params.chainId].rpcUrls.antiMev?.http[0] },
+  });
+
   const publicClient = createPublicClient({
     chain: chains[params.chainId],
-    transport: http(chains[params.chainId].rpcUrls.antiMev.http[0]),
+    transport: http(chains[params.chainId].rpcUrls.antiMev!.http[0]),
+  });
+
+  updateStep(clientStepId, { status: 'success' });
+
+  // Step 6: Get cached transaction
+  const cachedTxStepId = addStep({
+    emoji: '📋',
+    title: 'Retrieving cached transaction',
+    description: 'Getting transaction data from AntiMEV cache',
+    data: { nonce, signature },
   });
 
   const transaction = await publicClient.request<{ ReturnType: Hex }>({
@@ -165,8 +273,14 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     params: [toHex(nonce), signature],
   });
 
-  // eslint-disable-next-line no-console
-  console.log('transaction', transaction);
+  updateStep(cachedTxStepId, { status: 'success', data: { transaction } });
+
+  // Step 7: Read consensus size
+  const consensusStepId = addStep({
+    emoji: '👥',
+    title: 'Reading consensus size',
+    description: 'Getting validator consensus information',
+  });
 
   const consensusSize = await readContract(wagmiConfig, {
     chainId: params.chainId,
@@ -175,8 +289,14 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     functionName: 'consensusSize',
   });
 
-  // eslint-disable-next-line no-console
-  console.log('consensusSize', consensusSize);
+  updateStep(consensusStepId, { status: 'success', data: { consensusSize } });
+
+  // Step 8: Read round number
+  const roundStepId = addStep({
+    emoji: '🔄',
+    title: 'Reading current round number',
+    description: 'Getting current encryption round',
+  });
 
   const roundNumber = await readContract(wagmiConfig, {
     chainId: params.chainId,
@@ -185,8 +305,15 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     functionName: 'roundNumber',
   });
 
-  // eslint-disable-next-line no-console
-  console.log('roundNumber', roundNumber);
+  updateStep(roundStepId, { status: 'success', data: { roundNumber } });
+
+  // Step 9: Read aggregated commitment
+  const commitmentStepId = addStep({
+    emoji: '🔐',
+    title: 'Reading aggregated commitment',
+    description: 'Getting encryption key materials',
+    data: { roundNumber },
+  });
 
   const aggregatedCommitment = await readContract(wagmiConfig, {
     chainId: params.chainId,
@@ -196,20 +323,62 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     args: [roundNumber],
   });
 
-  // eslint-disable-next-line no-console
-  console.log('aggregatedCommitment', aggregatedCommitment);
+  updateStep(commitmentStepId, { status: 'success', data: { aggregatedCommitment } });
+
+  // Step 10: Create public key
+  const keyStepId = addStep({
+    emoji: '🗝️',
+    title: 'Creating TPKE public key',
+    description: 'Generating threshold public key for encryption',
+  });
 
   const publicKey = PublicKey.fromAggregatedCommitment(
     toBytes(aggregatedCommitment),
     getScaler(consensusSize, getConsensusThreshold(consensusSize)),
   );
 
+  updateStep(keyStepId, {
+    status: 'success',
+    data: { threshold: getConsensusThreshold(consensusSize) },
+  });
+
+  // Step 11: Encrypt transaction
+  const encryptStepId = addStep({
+    emoji: '🔒',
+    title: 'Encrypting transaction',
+    description: 'Using TPKE to encrypt transaction data',
+  });
+
   const { encryptedKey, encryptedMsg } = publicKey.encrypt(toBytes(transaction));
+
+  updateStep(encryptStepId, {
+    status: 'success',
+    data: { encryptedKeyLength: encryptedKey.length, encryptedMsgLength: encryptedMsg.length },
+  });
+
+  // Step 12: Parse transaction object
+  const parseStepId = addStep({
+    emoji: '🔍',
+    title: 'Parsing transaction object',
+    description: 'Extracting transaction parameters',
+  });
 
   const transactionObject = parseTransaction(transaction);
 
-  // eslint-disable-next-line no-console
-  console.log('transactionGas', transactionObject.gas);
+  updateStep(parseStepId, {
+    status: 'success',
+    data: {
+      gas: transactionObject.gas?.toString(),
+      gasPrice: transactionObject.gasPrice?.toString(),
+    },
+  });
+
+  // Step 13: Create envelope data
+  const envelopeStepId = addStep({
+    emoji: '📦',
+    title: 'Creating transaction envelope',
+    description: 'Packaging encrypted data for submission',
+  });
 
   const envelopeData = concat([
     new Uint8Array([0xff, 0xff, 0xff, 0xff]),
@@ -220,10 +389,35 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     encryptedMsg,
   ]);
 
-  // eslint-disable-next-line no-console
-  console.log('envelopeData', toHex(envelopeData));
+  updateStep(envelopeStepId, {
+    status: 'success',
+    data: { envelopeSize: envelopeData.length, envelopeData: toHex(envelopeData) },
+  });
+
+  // Step 14: Switch chain for final submission
+  const finalSwitchStepId = addStep({
+    emoji: '🔄',
+    title: 'Switching chain for submission',
+    description: 'Preparing for final transaction submission',
+  });
 
   await switchChain({ chainId: params.chainId, useAntiMev: params.useAntiMev });
+
+  updateStep(finalSwitchStepId, { status: 'success' });
+
+  // Step 15: Submit final transaction
+  const submitStepId = addStep({
+    emoji: '🚀',
+    title: 'Submitting AntiMEV transaction',
+    description: 'Sending encrypted transaction to governance contract',
+    data: {
+      target: getChainContractAddress({
+        chain: chains[params.chainId],
+        contract: 'governanceReward',
+      }),
+      dataSize: envelopeData.length,
+    },
+  });
 
   const hash = await sendTransaction(wagmiConfig, {
     chainId: params.chainId,
@@ -231,6 +425,18 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     to: getChainContractAddress({ chain: chains[params.chainId], contract: 'governanceReward' }),
     data: toHex(envelopeData),
   });
+
+  updateStep(submitStepId, { status: 'success', data: { transactionHash: hash } });
+
+  // Final step
+  const finalStepId = addStep({
+    emoji: '🎉',
+    title: 'AntiMEV transaction completed',
+    description: 'Transaction successfully submitted to AntiMEV system',
+    data: { hash },
+  });
+
+  updateStep(finalStepId, { status: 'success' });
 
   return hash;
 }

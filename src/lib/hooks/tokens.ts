@@ -63,8 +63,63 @@ export function useTransfer() {
 
   return useMutation({
     mutationFn: async (params: TransferParams) => {
+      const { onStep, onUpdateStep } = params;
+
       const hash = await transfer(params);
-      await waitForTransactionReceipt(wagmiConfig, { chainId: params.chainId, hash });
+
+      // Add transaction confirmation step
+      const confirmStepId = onStep?.({
+        emoji: '⏳',
+        title: 'Waiting for transaction confirmation',
+        description: 'Monitoring blockchain for transaction inclusion',
+        data: { transactionHash: hash },
+      });
+
+      try {
+        const receipt = await waitForTransactionReceipt(wagmiConfig, {
+          chainId: params.chainId,
+          hash,
+        });
+
+        if (confirmStepId != null) {
+          onUpdateStep?.(confirmStepId, {
+            status: 'success',
+            data: {
+              transactionHash: hash,
+              blockNumber: receipt.blockNumber.toString(),
+              gasUsed: receipt.gasUsed.toString(),
+              status: receipt.status,
+            },
+          });
+        }
+
+        // Add final confirmation step
+        const finalConfirmStepId = onStep?.({
+          emoji: '✅',
+          title: 'Transaction confirmed onchain',
+          description: `Transaction included in block ${receipt.blockNumber}`,
+          data: {
+            blockNumber: receipt.blockNumber.toString(),
+            gasUsed: receipt.gasUsed.toString(),
+            transactionHash: hash,
+          },
+        });
+
+        if (finalConfirmStepId != null) {
+          onUpdateStep?.(finalConfirmStepId, { status: 'success' });
+        }
+      } catch (error) {
+        if (confirmStepId != null) {
+          onUpdateStep?.(confirmStepId, {
+            status: 'error',
+            data: {
+              error: error instanceof Error ? error.message : String(error),
+            },
+          });
+        }
+        throw error;
+      }
+
       queryClient.invalidateQueries({
         queryKey: ['balance', { chainId: params.chainId, account: params.account }],
       });
