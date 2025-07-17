@@ -1,74 +1,61 @@
-# NeoX TPKE Monorepo
+# NeoX TPKE Examples
 
-This monorepo contains the implementation of Threshold Public Key Encryption (TPKE) utilities for NeoX blockchain, along with example applications demonstrating its usage.
+This repository contains examples for using the NeoX TPKE (Threshold Public Key Encryption) library.
 
-## Overview
+## Features
 
-NeoX TPKE provides cryptographic utilities for threshold encryption, allowing data to be encrypted in a way that requires a threshold number of participants to decrypt it. This is particularly useful for blockchain applications that require privacy and security features.
-
-The repository is organized as a monorepo using pnpm workspaces and Turborepo for efficient management of multiple packages and applications.
-
-## Repository Structure
-
-- `packages/neox-tpke`: Core TPKE implementation library
-- `apps/examples`: Example Next.js application demonstrating the usage of the TPKE library
-
-## Key Features
-
-- BLS-based threshold encryption
-- Public key generation from aggregated commitments
-- Secure message encryption with AES
-- Anti-MEV transaction protection examples
+- Transfer example demonstrating threshold public key encryption
+- Modern React/Next.js application with TypeScript
+- Integration with Rainbow Kit for wallet connections
+- Cloudflare Pages deployment ready
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js >= 22
-- pnpm >= 10.5.2
+- Node.js 22.x
+- pnpm
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/bane-labs/neox-tpke-monorepo.git
-cd neox-tpke-monorepo
-
-# Install dependencies
 pnpm install
 ```
 
 ### Development
 
 ```bash
-# Build all packages
-pnpm build
-
-# Run development servers
-pnpm dev
-
-# Run tests
-pnpm test
+pnpm run dev
 ```
 
-## Packages
+### Building
 
-### neox-tpke
+```bash
+pnpm run build
+```
 
-The core library implementing TPKE functionality. It provides:
+### Deployment
 
-- Cryptographic primitives for threshold encryption
-- Public key management
-- Message encryption and decryption
+This project is configured for deployment on Cloudflare Pages. The deployment workflow is triggered via GitHub Actions.
 
-### examples
+## Dependencies
 
-A Next.js application demonstrating the usage of the TPKE library, including:
+This project uses the `neox-tpke` NPM package for threshold public key encryption functionality.
 
-- Token transfer with anti-MEV protection
-- Integration with blockchain wallets
-- UI components for encryption operations
+## Project Structure
+
+- `src/app/` - Next.js app router pages
+- `src/lib/` - Utilities, hooks, and configurations
+- `src/ui/` - React components
+- `src/styles/` - CSS and styling
+
+## Releases
+
+Application releases are managed through:
+- **Git tags** for version tracking (`git tag v1.0.0`)
+- **GitHub Releases** for changelogs and release notes
+- **Automated deployment** via GitHub Actions to Cloudflare Pages
 
 ## License
 
-[MIT](LICENSE)
+This project is private and proprietary.

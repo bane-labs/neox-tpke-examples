@@ -5,6 +5,7 @@ import { appName } from '@/configs/app';
 import { fontsClassName } from '@/lib/utils/fonts';
 import { Header } from '@/ui/app/header';
 import { Providers } from '@/ui/app/providers';
+import { RequirementsBanner } from '@/ui/app/requirements-banner';
 
 export const metadata: Metadata = {
   title: appName,
@@ -15,7 +16,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body className={fontsClassName}>
         <Providers>
-          <div className="flex min-h-screen min-w-[1400px] flex-col">
+          <div className="flex min-h-screen flex-col">
+            <RequirementsBanner />
             <Header />
             {children}
           </div>

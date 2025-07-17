@@ -27,7 +27,7 @@ export const chains: Record<ChainId, Chain> = {
   [ChainId.ArbitrumSepolia]: arbitrumSepolia,
   [ChainId.NeoXT4]: {
     id: ChainId.NeoXT4,
-    name: 'Neo X T4',
+    name: 'Neo X Testnet T4',
     nativeCurrency: {
       name: 'GAS',
       symbol: 'GAS',

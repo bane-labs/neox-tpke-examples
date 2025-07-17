@@ -1,26 +1,42 @@
-# Editor
+# editor
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea
 
-# Dependencies
+# dependencies
 node_modules
 
-# Build
-dist
+# build
+.next
+next-env.d.ts
+tsconfig.tsbuildinfo
+.vercel
+.wrangler
+
+# turbo
 .turbo
 
-# Logs
+# environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-# Local
+# testing
+coverage/
+*.lcov
+
+# local
 *.local
 
-# Misc
+# misc
 .DS_Store
