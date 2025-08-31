@@ -2,6 +2,7 @@
   "name": "neox-tpke-examples",
   "private": true,
   "type": "module",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "pnpm exec next-on-pages",
     "check-types": "tsc",

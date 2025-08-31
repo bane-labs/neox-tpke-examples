@@ -58,4 +58,6 @@ Application releases are managed through:
 
 ## License
 
-This project is private and proprietary.
+Licensed under the Apache License, Version 2.0. See the [LICENSE](./LICENSE) file for details.
+
+Copyright (c) 2025 Bane Labs
