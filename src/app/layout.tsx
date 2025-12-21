@@ -7,6 +7,8 @@ import { Header } from '@/ui/app/header';
 import { Providers } from '@/ui/app/providers';
 import { RequirementsBanner } from '@/ui/app/requirements-banner';
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: appName,
 };
