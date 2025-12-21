@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/ui/shadcn/button';
 
+export const runtime = 'edge';
+
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center">
