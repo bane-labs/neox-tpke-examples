@@ -1,16 +1,17 @@
 import {
+  estimateGas,
   getTransactionCount,
   readContract,
   sendTransaction,
   signMessage,
   getBalance as wagmiGetBalance,
-  writeContract,
 } from '@wagmi/core';
 import { getConsensusThreshold, getScaler, PublicKey } from 'neox-tpke';
 import {
   Address,
   concat,
   createPublicClient,
+  encodeFunctionData,
   getChainContractAddress,
   Hash,
   Hex,
@@ -181,13 +182,28 @@ export async function transfer(params: TransferParams): Promise<Hash> {
         nonce,
       });
     } else {
-      hash = await writeContract(wagmiConfig, {
-        chainId: params.chainId,
-        address: params.address,
-        account: params.account,
+      // Encode the transfer function call data
+      const data = encodeFunctionData({
         abi: erc20Abi,
         functionName: 'transfer',
         args: [params.to, amountToRawAmount(params.amount, params.decimals)],
+      });
+
+      // Estimate gas explicitly to avoid MetaMask estimation issues
+      const gas = await estimateGas(wagmiConfig, {
+        chainId: params.chainId,
+        account: params.account,
+        to: params.address,
+        data,
+      });
+
+      // Send as a regular transaction with explicit gas
+      hash = await sendTransaction(wagmiConfig, {
+        chainId: params.chainId,
+        account: params.account,
+        to: params.address,
+        data,
+        gas,
         nonce,
       });
     }
