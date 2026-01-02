@@ -228,7 +228,8 @@ export async function transfer(params: TransferParams): Promise<Hash> {
     if (
       params.useAntiMev !== true ||
       !(error instanceof ViemBaseError) ||
-      error.walk(error => error instanceof InternalRpcError) == null
+      (error.walk(error => error instanceof InternalRpcError) == null &&
+        !error.message.includes('transaction cached'))
     ) {
       updateStep(txStepId, {
         status: 'error',
