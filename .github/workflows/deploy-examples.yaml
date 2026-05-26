@@ -3,6 +3,9 @@ env:
   NEXT_PUBLIC_ENVIRONMENT: development
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
